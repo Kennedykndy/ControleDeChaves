@@ -294,6 +294,41 @@ export default function DashboardScreen({
     setActionType(null);
   };
 
+  // ✅ NOVA FUNÇÃO (DELETE)
+  const handleDeleteEnvironment = (envId: string) => {
+    const envToDelete = environments.find((e) => e.id === envId);
+    if (!envToDelete) return;
+
+    // ✅ CONFIRMAÇÃO
+    const confirmDelete = window.confirm(
+      `Tem certeza que deseja excluir o ambiente "${envToDelete.name}"?`,
+    );
+
+    if (!confirmDelete) return;
+
+    setEnvironments((prev) => prev.filter((e) => e.id !== envId));
+
+    const userName = currentUser?.fullName || "Administrador";
+
+    const newLog: ActivityLog = {
+      id: `log-${Date.now()}`,
+      timestamp: "Hoje, " + new Date().toLocaleTimeString("pt-BR"),
+      userInitials: userName.slice(0, 2).toUpperCase(),
+      userName: userName,
+      action: "Exclusão de Ambiente",
+      resource: envToDelete.name,
+      status: "Info",
+      duration: `Ambiente ${envToDelete.name} removido`,
+    };
+
+    setLogs((prevLogs) => [newLog, ...prevLogs]);
+
+    if (selectedEnvForAction?.id === envId) {
+      setSelectedEnvForAction(null);
+      setActionType(null);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 font-sans relative">
       {/* Sidebar Drawer */}
@@ -634,7 +669,7 @@ export default function DashboardScreen({
                             </span>
                           )}
                         </td>
-                        <td className="px-6 py-4 text-right">
+                        <td className="px-6 py-4 text-right space-x-2">
                           {env.status === "Disponível" ? (
                             <button
                               onClick={() => handleOpenAction(env)}
@@ -652,6 +687,15 @@ export default function DashboardScreen({
                               Devolver
                             </button>
                           )}
+
+                          {/* BOTÃO EXCLUIR */}
+                          <button
+                            onClick={() => handleDeleteEnvironment(env.id)}
+                            className="bg-red-600 hover:bg-red-700 text-white text-[10px] font-extrabold px-3 py-1.5 rounded-lg transition-all active:scale-95 cursor-pointer inline-flex items-center gap-1.5 uppercase tracking-wider"
+                          >
+                            <X size={11} />
+                            Excluir
+                          </button>
                         </td>
                       </tr>
                     ))
