@@ -1,6 +1,0 @@
-{
-  "name": "Gestão - SENAC Agreste",
-  "description": "Sistema integrado para controle de acesso, cadastro de funcionários, chaves e ambientes da Unidade SENAC Agreste.",
-  "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
-}
