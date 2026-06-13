@@ -31,7 +31,7 @@ import AddEmployeeScreen from "./components/AddEmployeeScreen";
 import AddKeyScreen from "./components/AddKeyScreen";
 import ReportsScreen from "./components/ReportsScreen";
 import EmployeeListScreen from "./components/EmployeeListScreen";
-import KeyStatusScreen from "./components/KeyStatusScreen";
+import KeyStatusScreen from "./KeyStatusScreen";
 
 export default function App() {
   // Navigation Routing States
