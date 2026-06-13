@@ -153,6 +153,24 @@ export default function Sidebar({
           <span className="text-sm font-medium">Chaves e Ambientes</span>
         </button>
 
+        {/* Status de Chaves (tela dedicada) */}
+        <button
+          onClick={() => handleNavClick("key-status")}
+          className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-150 cursor-pointer ${
+            currentScreen === "key-status"
+              ? "bg-blue-600/10 text-blue-400 font-semibold border-l-4 border-blue-500"
+              : "text-slate-400 hover:text-white hover:bg-slate-850/50"
+          }`}
+        >
+          <History
+            size={18}
+            className={
+              currentScreen === "key-status" ? "text-blue-400" : "text-slate-450"
+            }
+          />
+          <span className="text-sm font-medium">Status de Chaves</span>
+        </button>
+
         {/* Relatórios */}
         <button
           onClick={() => handleNavClick("reports")}

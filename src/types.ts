@@ -10,7 +10,8 @@ export type ScreenType =
   | "add-employee"
   | "employees"
   | "add-key"
-  | "reports";
+  | "reports"
+  | "key-status";
 
 export type TransitionType = "push" | "push_back" | "slide_up" | "none";
 

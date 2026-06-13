@@ -31,6 +31,7 @@ import AddEmployeeScreen from "./components/AddEmployeeScreen";
 import AddKeyScreen from "./components/AddKeyScreen";
 import ReportsScreen from "./components/ReportsScreen";
 import EmployeeListScreen from "./components/EmployeeListScreen";
+import KeyStatusScreen from "./components/KeyStatusScreen";
 
 export default function App() {
   // Navigation Routing States
@@ -230,6 +231,19 @@ export default function App() {
               onLogout={handleLogout}
             />
           )}
+
+          {currentScreen === "key-status" && (
+  <KeyStatusScreen
+    onNavigate={navigateTo}
+    environments={environments}
+    setEnvironments={setEnvironments}
+    logs={logs}
+    setLogs={setLogs}
+    employees={employees}
+    currentUser={currentUser}
+    onLogout={handleLogout}
+  />
+)}
         </motion.div>
       </AnimatePresence>
     </div>

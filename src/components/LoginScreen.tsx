@@ -42,12 +42,23 @@ export default function LoginScreen({
     setErrorMsg("");
     setLoading(true);
 
+    const normalizeRegistration = (str: string) =>
+      str.replace(/[^a-zA-Z0-9]/g, "").toLowerCase();
+
     window.setTimeout(() => {
-      const matched = accounts.find(
-        (acc) =>
-          acc.email.toLowerCase() === normalizedIdentifier.toLowerCase() ||
-          acc.registration === normalizedIdentifier,
-      );
+      const matched = accounts.find((acc) => {
+        // match by email
+        if (acc.email && acc.email.toLowerCase() === normalizedIdentifier.toLowerCase()) return true;
+
+        // otherwise try matching by normalized registration
+        if (acc.registration) {
+          const accReg = normalizeRegistration(acc.registration);
+          const inputReg = normalizeRegistration(normalizedIdentifier);
+          if (accReg === inputReg) return true;
+        }
+
+        return false;
+      });
 
       if (!matched) {
         setErrorMsg("Nenhuma conta foi encontrada para este acesso.");
@@ -55,9 +66,7 @@ export default function LoginScreen({
         return;
       }
 
-      const passwordMatches =
-        matched.password === undefined ||
-        matched.password === normalizedPassword;
+      const passwordMatches = matched.password === undefined || matched.password === normalizedPassword;
 
       if (!passwordMatches) {
         setErrorMsg("E-mail ou senha inválidos.");

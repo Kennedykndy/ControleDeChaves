@@ -35,7 +35,7 @@ import {
 } from "lucide-react";
 
 interface DashboardScreenProps {
-  onNavigate: (screen: ScreenType, transition: TransitionType) => void;
+  onNavigate: (screen: ScreenType, transition?: TransitionType) => void;
   environments: Environment[];
   setEnvironments: React.Dispatch<React.SetStateAction<Environment[]>>;
   logs: ActivityLog[];
@@ -1177,6 +1177,12 @@ export default function DashboardScreen({
                   >
                     Ver Funcionários
                   </button>
+                  <button
+  onClick={() => onNavigate("key-status", "push")}
+  className="w-full rounded-xl bg-indigo-600 text-white p-4"
+>
+  Status de Chaves por Ambiente
+</button>
                 </div>
               </div>
             )}
