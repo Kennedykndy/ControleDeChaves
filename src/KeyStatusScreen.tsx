@@ -5,7 +5,7 @@ import {
   UserAccount,
   ActivityLog,
   Employee,
-} from "../types";
+} from "./types";
 import {
   CheckCircle,
   ArrowUpRight,
