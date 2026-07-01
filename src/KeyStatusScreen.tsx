@@ -59,14 +59,26 @@ export default function KeyStatusScreen({
   // Checkin modal states
   const [returnObservation, setReturnObservation] = useState("");
   const [checkinTime, setCheckinTime] = useState("");
+  const [environmentSearch, setEnvironmentSearch] = useState("");
 
   const filteredEmployees = employees.filter((emp) =>
-    `${emp.fullName} ${emp.registration} ${emp.role}`.toLowerCase().includes(employeeSearch.toLowerCase()),
+    `${emp.fullName} ${emp.registration} ${emp.role}`
+      .toLowerCase()
+      .includes(employeeSearch.toLowerCase()),
+  );
+
+  const filteredEnvironments = environments.filter((env) =>
+    `${env.name} ${env.block} ${env.keyId}`
+      .toLowerCase()
+      .includes(environmentSearch.toLowerCase()),
   );
 
   const openAction = (env: Environment) => {
     setSelectedEnv(env);
-    const nowStr = new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+    const nowStr = new Date().toLocaleTimeString("pt-BR", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
     const mode = env.status === "Disponível" ? "checkout" : "checkin";
     setAction(mode);
     setStatusChoice("Disponível");
@@ -76,9 +88,14 @@ export default function KeyStatusScreen({
     }
 
     if (mode === "checkout") {
-      const nowStr = new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+      const nowStr = new Date().toLocaleTimeString("pt-BR", {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
       setEmployeeSearch("");
-      setSelectedEmployeeId(employees && employees.length > 0 ? employees[0].id : "");
+      setSelectedEmployeeId(
+        employees && employees.length > 0 ? employees[0].id : "",
+      );
       setCustomResponsible("");
       setConfirmRegistration("");
       setRegistrationError("");
@@ -96,7 +113,8 @@ export default function KeyStatusScreen({
       return;
     }
 
-    const normalizeRegistration = (str: string) => str.replace(/[^a-zA-Z0-9]/g, "").toLowerCase();
+    const normalizeRegistration = (str: string) =>
+      str.replace(/[^a-zA-Z0-9]/g, "").toLowerCase();
     const enteredNormalized = normalizeRegistration(confirmRegistration);
 
     let finalResponsible = "";
@@ -107,7 +125,9 @@ export default function KeyStatusScreen({
       initials = finalResponsible.slice(0, 2).toUpperCase();
 
       if (enteredNormalized.length < 3) {
-        setRegistrationError("Para nomes personalizados, digite uma matrícula válida (mínimo 3 dígitos).");
+        setRegistrationError(
+          "Para nomes personalizados, digite uma matrícula válida (mínimo 3 dígitos).",
+        );
         return;
       }
     } else {
@@ -124,9 +144,13 @@ export default function KeyStatusScreen({
         finalResponsible = currentUser.fullName;
         initials = currentUser.fullName.slice(0, 2).toUpperCase();
         if (currentUser.registration) {
-          const userNormalized = normalizeRegistration(currentUser.registration);
+          const userNormalized = normalizeRegistration(
+            currentUser.registration,
+          );
           if (enteredNormalized !== userNormalized) {
-            setRegistrationError(`Matrícula incorreta para seu usuário (${currentUser.fullName}).`);
+            setRegistrationError(
+              `Matrícula incorreta para seu usuário (${currentUser.fullName}).`,
+            );
             return;
           }
         }
@@ -136,12 +160,22 @@ export default function KeyStatusScreen({
       }
     }
 
-    const nowTime = checkoutTime || new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+    const nowTime =
+      checkoutTime ||
+      new Date().toLocaleTimeString("pt-BR", {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
 
     setEnvironments((prev) =>
       prev.map((e) =>
         e.id === selectedEnv.id
-          ? { ...e, status: "Ocupado", currentResponsible: finalResponsible, withdrawalTime: nowTime }
+          ? {
+              ...e,
+              status: "Ocupado",
+              currentResponsible: finalResponsible,
+              withdrawalTime: nowTime,
+            }
           : e,
       ),
     );
@@ -172,7 +206,15 @@ export default function KeyStatusScreen({
     setEnvironments((prev) =>
       prev.map((e) =>
         e.id === selectedEnv.id
-          ? { ...e, status: statusChoice, currentResponsible: statusChoice === "Disponível" ? undefined : e.currentResponsible, withdrawalTime: undefined }
+          ? {
+              ...e,
+              status: statusChoice,
+              currentResponsible:
+                statusChoice === "Disponível"
+                  ? undefined
+                  : e.currentResponsible,
+              withdrawalTime: undefined,
+            }
           : e,
       ),
     );
@@ -183,16 +225,12 @@ export default function KeyStatusScreen({
       userInitials: initials,
       userName: currentRep,
       action:
-        statusChoice === "Disponível"
-          ? "Devolução"
-          : `Status: ${statusChoice}`,
+        statusChoice === "Disponível" ? "Devolução" : `Status: ${statusChoice}`,
       resource: selectedEnv.name,
       status: statusChoice === "Manutenção" ? "Info" : "Sucesso",
       withdrawalTime: selectedEnv.withdrawalTime,
       returnTime: checkinTime,
-      duration:
-        returnObservation &&
-        `Obs: ${returnObservation}`,
+      duration: returnObservation && `Obs: ${returnObservation}`,
     };
 
     setLogs((prev) => [newLog, ...prev]);
@@ -226,43 +264,82 @@ export default function KeyStatusScreen({
         <h1 className="text-2xl font-bold">Status de Chaves por Ambiente</h1>
 
         <div className="flex items-center gap-3">
-          <button onClick={() => onNavigate("dashboard")} className="px-4 py-2 bg-blue-600 text-white rounded-lg">
+          <button
+            onClick={() => onNavigate("dashboard")}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg"
+          >
             Voltar
           </button>
-          <button onClick={onLogout} className="px-4 py-2 bg-red-600 text-white rounded-lg">
+          <button
+            onClick={onLogout}
+            className="px-4 py-2 bg-red-600 text-white rounded-lg"
+          >
             Sair
           </button>
         </div>
       </div>
 
+      <div className="mb-4 relative">
+        <Search
+          size={18}
+          className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+        />
+
+        <input
+          type="text"
+          placeholder="Pesquisar ambiente..."
+          value={environmentSearch}
+          onChange={(e) => setEnvironmentSearch(e.target.value)}
+          className="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+        />
+      </div>
+
       <div className="grid gap-4">
-        {environments.map((env) => (
-          <div key={env.id} className="border rounded-xl p-4 shadow-sm flex items-center justify-between">
+        {filteredEnvironments.map((env) => (
+          <div
+            key={env.id}
+            className="border rounded-xl p-4 shadow-sm flex items-center justify-between"
+          >
             <div>
               <h2 className="font-semibold text-lg">{env.name}</h2>
-              <div className="text-sm text-slate-500">Cód: {env.keyId} • {env.block} ({env.floor})</div>
+              <div className="text-sm text-slate-500">
+                Cód: {env.keyId} • {env.block} ({env.floor})
+              </div>
               <div className="mt-2 text-xs">
-                <span className={`px-3 py-1 rounded-full ${env.status === "Disponível" ? "bg-emerald-100 text-emerald-700" : env.status === "Ocupado" ? "bg-blue-100 text-blue-700" : "bg-red-100 text-red-700"}`}>
+                <span
+                  className={`px-3 py-1 rounded-full ${env.status === "Disponível" ? "bg-emerald-100 text-emerald-700" : env.status === "Ocupado" ? "bg-blue-100 text-blue-700" : "bg-red-100 text-red-700"}`}
+                >
                   {env.status === "Ocupado" ? "Em Uso" : env.status}
                 </span>
                 {env.currentResponsible && (
-                  <span className="ml-3 text-xs text-slate-500">Responsável: {env.currentResponsible}</span>
+                  <span className="ml-3 text-xs text-slate-500">
+                    Responsável: {env.currentResponsible}
+                  </span>
                 )}
               </div>
             </div>
 
             <div className="flex items-center gap-2">
               {env.status === "Disponível" ? (
-                <button onClick={() => openAction(env)} className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg flex items-center gap-2">
+                <button
+                  onClick={() => openAction(env)}
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg flex items-center gap-2"
+                >
                   <ArrowUpRight size={14} /> Retirar
                 </button>
               ) : (
-                <button onClick={() => openAction(env)} className="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg flex items-center gap-2">
+                <button
+                  onClick={() => openAction(env)}
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg flex items-center gap-2"
+                >
                   <CheckCircle size={14} /> Devolver
                 </button>
               )}
 
-              <button onClick={() => handleDelete(env.id)} className="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-lg flex items-center gap-2">
+              <button
+                onClick={() => handleDelete(env.id)}
+                className="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-lg flex items-center gap-2"
+              >
                 <X size={14} /> Excluir
               </button>
             </div>
@@ -276,10 +353,24 @@ export default function KeyStatusScreen({
           <div className="bg-white rounded-xl p-6 w-full max-w-xl">
             <div className="flex justify-between items-start">
               <div>
-                <h3 className="text-lg font-bold">{action === "checkout" ? "Operação de Retirada" : "Operação de Devolução"}</h3>
-                <p className="text-xs text-slate-500 mt-1">{selectedEnv.name} — {selectedEnv.keyId}</p>
+                <h3 className="text-lg font-bold">
+                  {action === "checkout"
+                    ? "Operação de Retirada"
+                    : "Operação de Devolução"}
+                </h3>
+                <p className="text-xs text-slate-500 mt-1">
+                  {selectedEnv.name} — {selectedEnv.keyId}
+                </p>
               </div>
-              <button onClick={() => { setSelectedEnv(null); setAction(null); }} className="text-slate-400"><X /></button>
+              <button
+                onClick={() => {
+                  setSelectedEnv(null);
+                  setAction(null);
+                }}
+                className="text-slate-400"
+              >
+                <X />
+              </button>
             </div>
 
             <div className="mt-4">
@@ -287,24 +378,59 @@ export default function KeyStatusScreen({
                 <div className="space-y-4 max-h-[70vh] overflow-y-auto">
                   <div className="space-y-2">
                     <div className="flex justify-between items-center">
-                      <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">1. Selecione o Funcionário</label>
+                      <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                        1. Selecione o Funcionário
+                      </label>
                     </div>
 
                     <div className="relative">
-                      <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-                      <input value={employeeSearch} onChange={(e) => setEmployeeSearch(e.target.value)} placeholder="Pesquisar funcionário" className="w-full pl-9 pr-4 py-2 border rounded text-xs" />
+                      <Search
+                        size={14}
+                        className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+                      />
+                      <input
+                        value={employeeSearch}
+                        onChange={(e) => setEmployeeSearch(e.target.value)}
+                        placeholder="Pesquisar funcionário"
+                        className="w-full pl-9 pr-4 py-2 border rounded text-xs"
+                      />
                     </div>
 
                     <div className="grid grid-cols-1 gap-2 max-h-40 overflow-y-auto border rounded p-2">
                       {filteredEmployees.length === 0 ? (
-                        <div className="text-xs text-slate-400 p-4 text-center">Nenhum funcionário encontrado.</div>
+                        <div className="text-xs text-slate-400 p-4 text-center">
+                          Nenhum funcionário encontrado.
+                        </div>
                       ) : (
                         filteredEmployees.map((emp) => (
-                          <div key={emp.id} onClick={() => { setSelectedEmployeeId(emp.id); setCustomResponsible(""); setConfirmRegistration(""); setRegistrationError(""); }} className={`p-2 rounded cursor-pointer flex items-center gap-3 ${selectedEmployeeId === emp.id && !customResponsible ? "bg-blue-50 border border-blue-200" : "bg-white"}`}>
-                            <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center font-bold text-xs">{emp.profilePicture ? <img src={emp.profilePicture} alt={emp.fullName} className="w-full h-full object-cover" /> : emp.fullName.slice(0,2).toUpperCase()}</div>
+                          <div
+                            key={emp.id}
+                            onClick={() => {
+                              setSelectedEmployeeId(emp.id);
+                              setCustomResponsible("");
+                              setConfirmRegistration("");
+                              setRegistrationError("");
+                            }}
+                            className={`p-2 rounded cursor-pointer flex items-center gap-3 ${selectedEmployeeId === emp.id && !customResponsible ? "bg-blue-50 border border-blue-200" : "bg-white"}`}
+                          >
+                            <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center font-bold text-xs">
+                              {emp.profilePicture ? (
+                                <img
+                                  src={emp.profilePicture}
+                                  alt={emp.fullName}
+                                  className="w-full h-full object-cover"
+                                />
+                              ) : (
+                                emp.fullName.slice(0, 2).toUpperCase()
+                              )}
+                            </div>
                             <div className="min-w-0">
-                              <div className="text-xs font-bold truncate">{emp.fullName}</div>
-                              <div className="text-[10px] text-slate-500 truncate">{emp.role} • {emp.registration}</div>
+                              <div className="text-xs font-bold truncate">
+                                {emp.fullName}
+                              </div>
+                              <div className="text-[10px] text-slate-500 truncate">
+                                {emp.role} • {emp.registration}
+                              </div>
                             </div>
                           </div>
                         ))
@@ -313,19 +439,45 @@ export default function KeyStatusScreen({
                   </div>
 
                   <div>
-                    <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Ou digite outro responsável (opcional)</label>
-                    <input value={customResponsible} onChange={(e) => { setCustomResponsible(e.target.value); setConfirmRegistration(""); setRegistrationError(""); }} className="w-full mt-2 p-2 border rounded text-xs" placeholder="Ex: Prof. Kennedy" />
-                    <p className="text-[9px] text-slate-400">Preencher substitui a seleção da lista.</p>
+                    <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                      Ou digite outro responsável (opcional)
+                    </label>
+                    <input
+                      value={customResponsible}
+                      onChange={(e) => {
+                        setCustomResponsible(e.target.value);
+                        setConfirmRegistration("");
+                        setRegistrationError("");
+                      }}
+                      className="w-full mt-2 p-2 border rounded text-xs"
+                      placeholder="Ex: Prof. Kennedy"
+                    />
+                    <p className="text-[9px] text-slate-400">
+                      Preencher substitui a seleção da lista.
+                    </p>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                     <div>
-                      <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Horário de Retirada *</label>
-                      <input type="time" value={checkoutTime} onChange={(e) => setCheckoutTime(e.target.value)} className="w-full mt-2 p-2 border rounded text-xs text-center" />
+                      <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                        Horário de Retirada *
+                      </label>
+                      <input
+                        type="time"
+                        value={checkoutTime}
+                        onChange={(e) => setCheckoutTime(e.target.value)}
+                        className="w-full mt-2 p-2 border rounded text-xs text-center"
+                      />
                     </div>
                     <div>
-                      <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Tempo Estimado</label>
-                      <select value={estimatedDuration} onChange={(e) => setEstimatedDuration(e.target.value)} className="w-full mt-2 p-2 border rounded text-xs">
+                      <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                        Tempo Estimado
+                      </label>
+                      <select
+                        value={estimatedDuration}
+                        onChange={(e) => setEstimatedDuration(e.target.value)}
+                        className="w-full mt-2 p-2 border rounded text-xs"
+                      >
                         <option value="1h">1 Hora</option>
                         <option value="2h">2 Horas</option>
                         <option value="4h">4 Horas</option>
@@ -334,21 +486,75 @@ export default function KeyStatusScreen({
                       </select>
                     </div>
                     <div>
-                      <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Motivo</label>
-                      <input value={checkoutNotes} onChange={(e) => setCheckoutNotes(e.target.value)} className="w-full mt-2 p-2 border rounded text-xs" placeholder="Ex: Aula prática" />
+                      <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                        Motivo
+                      </label>
+                      <input
+                        value={checkoutNotes}
+                        onChange={(e) => setCheckoutNotes(e.target.value)}
+                        className="w-full mt-2 p-2 border rounded text-xs"
+                        placeholder="Ex: Aula prática"
+                      />
                     </div>
                   </div>
 
                   <div className="bg-slate-50 border p-3 rounded">
-                    <div className="flex items-center gap-2"><ShieldCheck className="w-4 h-4 text-blue-600" /><label className="text-[10px] font-bold">Confirmação por Matrícula *</label></div>
-                    <p className="text-[11px] text-slate-500 mt-1">Digite a matrícula correspondente para validar a retirada{!customResponsible && <><br/>Dica: matrícula de <strong>{employees.find(e => e.id === selectedEmployeeId)?.fullName || 'Funcionário'}</strong> é <strong>{employees.find(e => e.id === selectedEmployeeId)?.registration || 'pendente'}</strong></>}</p>
-                    <input value={confirmRegistration} onChange={(e) => { setConfirmRegistration(e.target.value); if (registrationError) setRegistrationError(""); }} className={`w-full mt-2 p-2 border rounded text-xs ${registrationError ? 'border-red-500 text-red-800' : ''}`} placeholder="Ex: 883.102-4 ou apenas números" />
-                    {registrationError && <div className="text-[10px] text-red-600 mt-2">⚠️ {registrationError}</div>}
+                    <div className="flex items-center gap-2">
+                      <ShieldCheck className="w-4 h-4 text-blue-600" />
+                      <label className="text-[10px] font-bold">
+                        Confirmação por Matrícula *
+                      </label>
+                    </div>
+                    <p className="text-[11px] text-slate-500 mt-1">
+                      Digite a matrícula correspondente para validar a retirada
+                      {!customResponsible && (
+                        <>
+                          <br />
+                          Dica: matrícula de{" "}
+                          <strong>
+                            {employees.find((e) => e.id === selectedEmployeeId)
+                              ?.fullName || "Funcionário"}
+                          </strong>{" "}
+                          é{" "}
+                          <strong>
+                            {employees.find((e) => e.id === selectedEmployeeId)
+                              ?.registration || "pendente"}
+                          </strong>
+                        </>
+                      )}
+                    </p>
+                    <input
+                      value={confirmRegistration}
+                      onChange={(e) => {
+                        setConfirmRegistration(e.target.value);
+                        if (registrationError) setRegistrationError("");
+                      }}
+                      className={`w-full mt-2 p-2 border rounded text-xs ${registrationError ? "border-red-500 text-red-800" : ""}`}
+                      placeholder="Ex: 883.102-4 ou apenas números"
+                    />
+                    {registrationError && (
+                      <div className="text-[10px] text-red-600 mt-2">
+                        ⚠️ {registrationError}
+                      </div>
+                    )}
                   </div>
 
                   <div className="flex justify-end gap-2 pt-3">
-                    <button onClick={() => { setSelectedEnv(null); setAction(null); }} className="px-4 py-2 border rounded">Voltar</button>
-                    <button onClick={handleConfirmCheckout} className="px-4 py-2 bg-blue-600 text-white rounded">Confirmar Retirada</button>
+                    <button
+                      onClick={() => {
+                        setSelectedEnv(null);
+                        setAction(null);
+                      }}
+                      className="px-4 py-2 border rounded"
+                    >
+                      Voltar
+                    </button>
+                    <button
+                      onClick={handleConfirmCheckout}
+                      className="px-4 py-2 bg-blue-600 text-white rounded"
+                    >
+                      Confirmar Retirada
+                    </button>
                   </div>
                 </div>
               ) : (
@@ -485,9 +691,7 @@ export default function KeyStatusScreen({
                       </label>
                       <div className="w-full px-4 py-2.5 text-xs rounded-lg border border-slate-150 bg-slate-100 text-slate-500 font-bold text-center flex items-center justify-center gap-1.5 select-none">
                         <Clock size={13} />
-                        <span>
-                          {selectedEnv.withdrawalTime || "08:30"}
-                        </span>
+                        <span>{selectedEnv.withdrawalTime || "08:30"}</span>
                       </div>
                     </div>
 
