@@ -489,12 +489,17 @@ export default function KeyStatusScreen({
                       <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
                         Motivo
                       </label>
-                      <input
+
+                      <select
                         value={checkoutNotes}
                         onChange={(e) => setCheckoutNotes(e.target.value)}
                         className="w-full mt-2 p-2 border rounded text-xs"
-                        placeholder="Ex: Aula prática"
-                      />
+                      >
+                        <option value="">Selecione um motivo</option>
+                        <option value="Limpeza">Limpeza</option>
+                        <option value="Aula">Aula</option>
+                        <option value="Manutenção">Manutenção</option>
+                      </select>
                     </div>
                   </div>
 
